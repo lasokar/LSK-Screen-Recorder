@@ -8,6 +8,7 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
+            font-size: 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -47,12 +48,12 @@
         }
 
         .controls {
-            margin-top: 20px;
             text-align: center;
         }
 
         .recorded-videos {
             margin-top: 30px;
+            margin-bottom: 30px;
             width: 100%;
             display: flex;
             flex-wrap: wrap;
@@ -207,15 +208,23 @@
         .footer a:hover {
             text-decoration: underline;
         }
+        .record-container {
+        	width: 100%;
+    		text-align: center;
+    		margin-top: 20px;
+    		padding-bottom: 20px;  /* Adds spacing below the container */
+    		border-bottom: 2px solid white;  /* Adds the white line */
+		}
     </style>
 </head>
 <body>
-    <h1>LSKR Screen Recorder</h1>
-    <button id="startRecord">Record Video</button>
-    <button id="stopRecord" style="display:none;">Stop Recording</button>
-
+	<div class="record-container">
+    	<h1>LSKR Screen Recorder</h1>
+    	<button id="startRecord">Record Video</button>
+    	<button id="stopRecord" style="display:none;">Stop Recording</button>
+	</div>
     <div class="controls">
-        <p id="recordedVideosText">Recorded Videos</p>
+        <p id="recordedVideosText">Your Videos:</p>
         <div class="recorded-videos" id="recordedVideosContainer"></div>
     </div>
 
