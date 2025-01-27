@@ -434,10 +434,11 @@
                 const videoToDelete = videos.find(video => video.videoURL === videoURL);
                 if (videoToDelete) {
                     objectStore.delete(videoToDelete.id);
+		    const updatedVideos = videos.filter(video => video.videoURL !== videoURL);
+            	    if (updatedVideos.length === 0) {
+                        recordedVideosText.style.display = 'none';
+            	    }
                 }
-		if (updatedVideos.length === 0) {
-                    recordedVideosText.style.display = 'none';
-            	}
             };
         }
 
