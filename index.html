@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sigma Screen Recorder</title>
+    <style>
+        #video {
+            max-width: 300px;
+            max-height: 300px;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        #stopRecord {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sigma Screen Recorder</h1>
+    <button id="startRecord">Start Recording</button>
+    <button id="stopRecord">Stop Recording</button>
+    <video id="video" controls></video>
+
+    <script>
+        let mediaRecorder;
+        let recordedChunks = [];
+        let screenStream;
+
+        const startRecordButton = document.getElementById('startRecord');
+        const stopRecordButton = document.getElementById('stopRecord');
+        const videoElement = document.getElementById('video');
+
+        startRecordButton.addEventListener('click', async () => {
+            try {
+                screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                mediaRecorder = new MediaRecorder(screenStream);
+
+                mediaRecorder.ondataavailable = (event) => {
+                    recordedChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    videoElement.src = URL.createObjectURL(blob);
+                    videoElement.style.display = 'block';
+                };
+
+                mediaRecorder.start();
+                stopRecordButton.style.display = 'inline';
+                startRecordButton.style.display = 'none';
+            } catch (err) {
+                console.error('Error accessing screen: ', err);
+            }
+        });
+
+        stopRecordButton.addEventListener('click', () => {
+            mediaRecorder.stop();
+            screenStream.getTracks().forEach(track => track.stop());
+            stopRecordButton.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
