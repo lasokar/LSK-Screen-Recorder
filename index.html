@@ -186,7 +186,7 @@
     <button id="stopRecord" style="display:none;">Stop Recording</button>
 
     <div class="controls">
-        <p>Recorded Videos</p>
+        <p id="recordedVideosText">Recorded Videos</p>
         <div class="recorded-videos" id="recordedVideosContainer"></div>
     </div>
 
@@ -208,12 +208,17 @@
         const popup = document.getElementById('popup');
         const popupVideo = document.getElementById('popupVideo');
         const popupCloseButton = document.getElementById('popupCloseButton');
+        const recordedVideosText = document.getElementById('recordedVideosText');
 
         window.addEventListener('load', () => {
             const savedVideos = JSON.parse(localStorage.getItem('sigmaScreenRecordings')) || [];
-            savedVideos.forEach(videoData => {
-                displayRecordedVideo(videoData.videoURL, videoData.date);  // Display all previously saved videos
-            });
+            if (savedVideos.length === 0) {
+                recordedVideosText.style.display = 'none';  // Hide the "Recorded Videos" text if no videos are saved
+            } else {
+                savedVideos.forEach(videoData => {
+                    displayRecordedVideo(videoData.videoURL, videoData.date);
+                });
+            }
         });
 
         startRecordButton.addEventListener('click', async () => {
@@ -293,8 +298,10 @@
             deleteButton.textContent = 'Delete Video';
             deleteButton.classList.add('delete-button');
             deleteButton.addEventListener('click', () => {
-                removeVideoFromStorage(base64Video);
-                videoThumbnail.remove();
+                if (window.confirm('Are you sure you want to delete this video?')) {
+                    removeVideoFromStorage(base64Video);
+                    videoThumbnail.remove();
+                }
             });
 
             const videoDate = document.createElement('p');
@@ -309,12 +316,16 @@
             videoThumbnail.appendChild(videoDate);
 
             recordedVideosContainer.appendChild(videoThumbnail);
+            recordedVideosText.style.display = 'block';
         }
 
         function removeVideoFromStorage(videoURL) {
             const savedVideos = JSON.parse(localStorage.getItem('sigmaScreenRecordings')) || [];
             const updatedVideos = savedVideos.filter(videoData => videoData.videoURL !== videoURL);
             localStorage.setItem('sigmaScreenRecordings', JSON.stringify(updatedVideos));
+            if (updatedVideos.length === 0) {
+                recordedVideosText.style.display = 'none';
+            }
         }
 
         popupCloseButton.addEventListener('click', () => {
