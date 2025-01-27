@@ -435,6 +435,9 @@
                 if (videoToDelete) {
                     objectStore.delete(videoToDelete.id);
                 }
+		if (updatedVideos.length === 0) {
+                    recordedVideosText.style.display = 'none';
+            	}
             };
         }
 
