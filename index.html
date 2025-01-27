@@ -153,10 +153,27 @@
             margin-top: 10px;
             border-radius: 5px;
             font-weight: 500;
+            height: 30px;
         }
 
         .delete-button:hover {
             background-color: #c82333;
+        }
+        
+        .download-button {
+            background-color: #37b85a;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-weight: 500;
+            height: 30px;
+        }
+
+        .download-button:hover {
+            background-color: #2f9e4d;
         }
 
         .popup {
@@ -371,60 +388,71 @@
             });
         }
 
-        function displayRecordedVideo(base64Video, date) {
-            const videoThumbnail = document.createElement('div');
-            videoThumbnail.classList.add('video-thumbnail');
+function displayRecordedVideo(base64Video, date) {
+    const videoThumbnail = document.createElement('div');
+    videoThumbnail.classList.add('video-thumbnail');
 
-            const videoContainer = document.createElement('div');
-            videoContainer.classList.add('video-container');
+    const videoContainer = document.createElement('div');
+    videoContainer.classList.add('video-container');
 
-            const videoElement = document.createElement('video');
-            videoElement.src = base64Video;
-            videoElement.muted = true;
-            videoElement.currentTime = 0.1;
+    const videoElement = document.createElement('video');
+    videoElement.src = base64Video;
+    videoElement.muted = true;
+    videoElement.currentTime = 0.1;
 
-            videoElement.style.width = '275px';
-            videoElement.style.height = '150px';
-            videoElement.style.objectFit = 'cover';
+    videoElement.style.width = '275px';
+    videoElement.style.height = '150px';
+    videoElement.style.objectFit = 'cover';
 
-            videoElement.onloadeddata = () => {
-                videoElement.pause();
-            };
+    videoElement.onloadeddata = () => {
+        videoElement.pause();
+    };
 
-            const playButton = document.createElement('button');
-            playButton.classList.add('play-button');
-            playButton.addEventListener('click', () => {
-                popup.style.display = 'flex';
-                popupVideo.src = base64Video;
-                popupVideo.play();
-                popupCloseButton.style.display = 'inline';
-            });
+    const playButton = document.createElement('button');
+    playButton.classList.add('play-button');
+    playButton.addEventListener('click', () => {
+        popup.style.display = 'flex';
+        popupVideo.src = base64Video;
+        popupVideo.play();
+        popupCloseButton.style.display = 'inline';
+    });
 
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete Video';
-            deleteButton.classList.add('delete-button');
-            deleteButton.addEventListener('click', () => {
-                if (window.confirm('Are you sure you want to delete this video?')) {
-                    deleteVideoFromDB(base64Video);
-                    videoThumbnail.remove();
-                }
-            });
-
-            const videoDate = document.createElement('p');
-            videoDate.classList.add('video-date');
-            videoDate.textContent = `Recorded on: ${date}`;
-
-            videoContainer.appendChild(videoElement);
-            videoThumbnail.appendChild(videoContainer);
-
-            videoThumbnail.appendChild(playButton);
-            videoThumbnail.appendChild(deleteButton);
-            videoThumbnail.appendChild(videoDate);
-
-            const videoThumbnailsWrapper = document.querySelector('.video-thumbnails-wrapper');
-            videoThumbnailsWrapper.appendChild(videoThumbnail);
-            recordedVideosText.style.display = 'block';
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.classList.add('delete-button');
+    deleteButton.addEventListener('click', () => {
+        if (window.confirm('Are you sure you want to delete this video?')) {
+            deleteVideoFromDB(base64Video);
+            videoThumbnail.remove();
         }
+    });
+
+    const downloadButton = document.createElement('button');
+    downloadButton.textContent = 'Download';
+    downloadButton.classList.add('download-button');
+    downloadButton.addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.href = base64Video;
+        link.download = `lsk_recorded_video_${date}.webm`;
+        link.click();
+    });
+
+    const videoDate = document.createElement('p');
+    videoDate.classList.add('video-date');
+    videoDate.textContent = `Recorded on: ${date}`;
+
+    videoContainer.appendChild(videoElement);
+    videoThumbnail.appendChild(videoContainer);
+
+    videoThumbnail.appendChild(playButton);
+    videoThumbnail.appendChild(downloadButton);
+    videoThumbnail.appendChild(deleteButton);
+    videoThumbnail.appendChild(videoDate);
+
+    const videoThumbnailsWrapper = document.querySelector('.video-thumbnails-wrapper');
+    videoThumbnailsWrapper.appendChild(videoThumbnail);
+    recordedVideosText.style.display = 'block';
+}
 
         function deleteVideoFromDB(videoURL) {
             const transaction = db.transaction(['videos'], 'readwrite');
