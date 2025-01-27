@@ -270,7 +270,7 @@
         const recordedVideosText = document.getElementById('recordedVideosText');
 
         window.addEventListener('load', () => {
-            const savedVideos = JSON.parse(sessionStorage.getItem('sigmaScreenRecordings')) || [];
+            const savedVideos = JSON.parse(localStorage.getItem('sigmaScreenRecordings')) || [];
             if (savedVideos.length === 0) {
                 recordedVideosText.style.display = 'none';
             } else {
@@ -305,9 +305,9 @@
                     const currentDate = new Date().toLocaleString();
                     const base64Video = await blobToBase64(blob);
 
-                    const savedVideos = JSON.parse(sessionStorage.getItem('sigmaScreenRecordings')) || [];
+                    const savedVideos = JSON.parse(localStorage.getItem('sigmaScreenRecordings')) || [];
                     savedVideos.push({ videoURL: base64Video, date: currentDate });
-                    sessionStorage.setItem('sigmaScreenRecordings', JSON.stringify(savedVideos));
+                    localStorage.setItem('sigmaScreenRecordings', JSON.stringify(savedVideos));
 
                     displayRecordedVideo(base64Video, currentDate);
                 };
@@ -392,9 +392,9 @@
         }
 
         function removeVideoFromStorage(videoURL) {
-            const savedVideos = JSON.parse(sessionStorage.getItem('sigmaScreenRecordings')) || [];
+            const savedVideos = JSON.parse(localStorage.getItem('sigmaScreenRecordings')) || [];
             const updatedVideos = savedVideos.filter(videoData => videoData.videoURL !== videoURL);
-            sessionStorage.setItem('sigmaScreenRecordings', JSON.stringify(updatedVideos));
+            localStorage.setItem('sigmaScreenRecordings', JSON.stringify(updatedVideos));
             if (updatedVideos.length === 0) {
                 recordedVideosText.style.display = 'none';
             }
