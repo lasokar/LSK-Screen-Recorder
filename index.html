@@ -213,7 +213,7 @@
         window.addEventListener('load', () => {
             const savedVideos = JSON.parse(localStorage.getItem('sigmaScreenRecordings')) || [];
             if (savedVideos.length === 0) {
-                recordedVideosText.style.display = 'none';  // Hide the "Recorded Videos" text if no videos are saved
+                recordedVideosText.style.display = 'none';
             } else {
                 savedVideos.forEach(videoData => {
                     displayRecordedVideo(videoData.videoURL, videoData.date);
@@ -224,6 +224,16 @@
         startRecordButton.addEventListener('click', async () => {
             try {
                 screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+                screenStream.getTracks().forEach(track => {
+                    track.onended = () => {
+                        if (mediaRecorder && mediaRecorder.state === 'recording') {
+                            mediaRecorder.stop();
+                        }
+                        screenStream.getTracks().forEach(track => track.stop());
+                        stopRecordButton.style.display = 'none';
+                    };
+                });
+
                 mediaRecorder = new MediaRecorder(screenStream);
 
                 mediaRecorder.ondataavailable = (event) => {
