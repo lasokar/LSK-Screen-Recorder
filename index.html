@@ -4,182 +4,181 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sigma Screen Recorder</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        margin: 0;
-        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-        color: white;
-    }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+        }
 
-    h1 {
-        color: white;
-        margin-bottom: 20px;
-        font-size: 2rem;
-        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    }
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
 
-    button {
-        padding: 10px 20px;
-        font-size: 16px;
-        margin: 10px;
-        cursor: pointer;
-        border: none;
-        border-radius: 5px;
-        background-color: #007bff;
-        color: white;
-        transition: background-color 0.3s ease;
-    }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
 
-    button:hover {
-        background-color: #0056b3;
-    }
+        button:hover {
+            background-color: #0056b3;
+        }
 
-    .controls {
-        margin-top: 20px;
-        text-align: center;
-    }
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
 
-    .recorded-videos {
-        margin-top: 30px;
-        width: 100%;
-        max-width: 800px;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
+        .recorded-videos {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
 
-    .video-thumbnail {
-        margin: 10px;
-        position: relative;
-        max-width: 250px;
-        text-align: center;
-        border: 3px solid #ffffff;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        transition: transform 0.3s ease;
-        background: gray;
-    }
+        .video-thumbnail {
+            margin: 10px;
+            position: relative;
+            max-width: 250px;
+            text-align: center;
+            border: 3px solid #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            background: gray;
+        }
 
-    .video-thumbnail .video-container {
-        filter: brightness(0.75);
-    }
+        .video-thumbnail .video-container {
+            filter: brightness(0.75);
+        }
 
-    .video-thumbnail .play-button {
-        position: absolute;
-        top: 25%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 50px;
-        height: 50px;
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        transition: transform 0.3s ease;
-    }
+        .video-thumbnail .play-button {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
 
-    .video-thumbnail .play-button::before {
-        content: '';
-        width: 0;
-        height: 0;
-        border-top: 30px solid transparent;
-        border-bottom: 30px solid transparent;
-        border-left: 50px solid white;
-        transition: all 0.3s ease;
-    }
+        .video-thumbnail .play-button::before {
+            content: '';
+            width: 0;
+            height: 0;
+            border-top: 30px solid transparent;
+            border-bottom: 30px solid transparent;
+            border-left: 50px solid white;
+            transition: all 0.3s ease;
+        }
 
-    .video-thumbnail .play-button::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 0;
-        height: 0;
-        border-top: 30px solid transparent;
-        border-bottom: 30px solid transparent;
-        border-left: 50px solid #007bff;
-        z-index: -1;
-        transition: all 0.3s ease;
-    }
+        .video-thumbnail .play-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-top: 30px solid transparent;
+            border-bottom: 30px solid transparent;
+            border-left: 50px solid #007bff;
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
 
-    .video-thumbnail .play-button:hover {
-        transform: translate(-50%, -50%) scale(0.9);
-    }
+        .video-thumbnail .play-button:hover {
+            transform: translate(-50%, -50%) scale(0.9);
+        }
 
-    .video-thumbnail .play-button:hover::after {
-        border-left-color: #0056b3;
-    }
+        .video-thumbnail .play-button:hover::after {
+            border-left-color: #0056b3;
+        }
 
-    .delete-button {
-        background-color: #dc3545;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-        margin-top: 10px;
-        border-radius: 5px;
-    }
+        .delete-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
 
-    .delete-button:hover {
-        background-color: #c82333;
-    }
+        .delete-button:hover {
+            background-color: #c82333;
+        }
 
-    .popup {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
-        justify-content: center;
-        align-items: center;
-    }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
 
-    .popup-content {
-        position: relative;
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        max-width: 600px;
-    }
+        .popup-content {
+            position: relative;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+        }
 
-    .popup-content video {
-        max-width: 100%;
-        height: auto;
-    }
+        .popup-content video {
+            max-width: 100%;
+            height: auto;
+        }
 
-    .popup-close {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background-color: #dc3545;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-    }
+        .popup-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
 
-    .popup-close:hover {
-        background-color: #c82333;
-    }
+        .popup-close:hover {
+            background-color: #c82333;
+        }
 
-    .video-date {
-        font-size: 14px;
-        color: #ccc;
-    }
-</style>
-
+        .video-date {
+            font-size: 14px;
+            color: #ccc;
+        }
+    </style>
 </head>
 <body>
     <h1>Sigma Screen Recorder</h1>
@@ -213,7 +212,7 @@
         window.addEventListener('load', () => {
             const savedVideos = JSON.parse(localStorage.getItem('sigmaScreenRecordings')) || [];
             savedVideos.forEach(videoData => {
-                displayRecordedVideo(videoData.videoURL, videoData.date);
+                displayRecordedVideo(videoData.videoURL, videoData.date);  // Display all previously saved videos
             });
         });
 
