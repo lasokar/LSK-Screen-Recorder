@@ -237,6 +237,7 @@
                         }
                         screenStream.getTracks().forEach(track => track.stop());
                         stopRecordButton.style.display = 'none';
+                        startRecordButton.style.display = 'inline';
                     };
                 });
 
@@ -270,6 +271,7 @@
             mediaRecorder.stop();
             screenStream.getTracks().forEach(track => track.stop());
             stopRecordButton.style.display = 'none';
+            startRecordButton.style.display = 'inline';
         });
 
         function blobToBase64(blob) {
