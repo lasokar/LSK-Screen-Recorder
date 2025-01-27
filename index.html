@@ -249,7 +249,7 @@
 
     <div id="popup" class="popup">
         <div class="popup-content">
-            <video id="popupVideo" controls></video>
+            <video id="popupVideo" controls preload="auto"></video>
         </div>
     </div>
     <div class="footer">
@@ -314,7 +314,7 @@
 
         startRecordButton.addEventListener('click', async () => {
             try {
-                screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+                screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 60 }, audio: true });
                 screenStream.getTracks().forEach(track => {
                     track.onended = () => {
                         if (mediaRecorder && mediaRecorder.state === 'recording') {
@@ -325,8 +325,11 @@
                         startRecordButton.style.display = 'inline';
                     };
                 });
-
-                mediaRecorder = new MediaRecorder(screenStream);
+		const options = {
+                    mimeType: 'video/webm; codecs=vp8',
+                    videoBitsPerSecond: 2500000
+                };
+                mediaRecorder = new MediaRecorder(screenStream, options);
 
                 mediaRecorder.ondataavailable = (event) => {
                     recordedChunks.push(event.data);
