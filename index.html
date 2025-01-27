@@ -269,16 +269,48 @@
         const popupCloseButton = document.getElementById('popupCloseButton');
         const recordedVideosText = document.getElementById('recordedVideosText');
 
-        window.addEventListener('load', () => {
-            const savedVideos = JSON.parse(localStorage.getItem('sigmaScreenRecordings')) || [];
-            if (savedVideos.length === 0) {
-                recordedVideosText.style.display = 'none';
-            } else {
-                savedVideos.forEach(videoData => {
-                    displayRecordedVideo(videoData.videoURL, videoData.date);
-                });
-            }
-        });
+        let db;
+        const openDB = () => {
+            const request = indexedDB.open('ScreenRecordingsDB', 1);
+
+            request.onupgradeneeded = function(event) {
+                db = event.target.result;
+                if (!db.objectStoreNames.contains('videos')) {
+                    const objectStore = db.createObjectStore('videos', { keyPath: 'id', autoIncrement: true });
+                    objectStore.createIndex('date', 'date', { unique: false });
+                }
+            };
+
+            request.onsuccess = function(event) {
+                db = event.target.result;
+                loadStoredVideos();
+            };
+
+            request.onerror = function(event) {
+                console.error('Database error: ', event.target.error);
+            };
+        };
+
+        const loadStoredVideos = () => {
+            const transaction = db.transaction(['videos'], 'readonly');
+            const objectStore = transaction.objectStore('videos');
+            const request = objectStore.getAll();
+
+            request.onsuccess = function(event) {
+                const videos = event.target.result;
+                if (videos.length > 0) {
+                    videos.forEach(videoData => {
+                        displayRecordedVideo(videoData.videoURL, videoData.date);
+                    });
+                } else {
+                    recordedVideosText.style.display = 'none';
+                }
+            };
+
+            request.onerror = function(event) {
+                console.error('Error fetching videos from IndexedDB: ', event.target.error);
+            };
+        };
 
         startRecordButton.addEventListener('click', async () => {
             try {
@@ -305,9 +337,9 @@
                     const currentDate = new Date().toLocaleString();
                     const base64Video = await blobToBase64(blob);
 
-                    const savedVideos = JSON.parse(localStorage.getItem('sigmaScreenRecordings')) || [];
-                    savedVideos.push({ videoURL: base64Video, date: currentDate });
-                    localStorage.setItem('sigmaScreenRecordings', JSON.stringify(savedVideos));
+                    const transaction = db.transaction(['videos'], 'readwrite');
+                    const objectStore = transaction.objectStore('videos');
+                    objectStore.add({ videoURL: base64Video, date: currentDate });
 
                     displayRecordedVideo(base64Video, currentDate);
                 };
@@ -370,7 +402,7 @@
             deleteButton.classList.add('delete-button');
             deleteButton.addEventListener('click', () => {
                 if (window.confirm('Are you sure you want to delete this video?')) {
-                    removeVideoFromStorage(base64Video);
+                    deleteVideoFromDB(base64Video);
                     videoThumbnail.remove();
                 }
             });
@@ -386,18 +418,24 @@
             videoThumbnail.appendChild(deleteButton);
             videoThumbnail.appendChild(videoDate);
 
-    		const videoThumbnailsWrapper = document.querySelector('.video-thumbnails-wrapper');
-    		videoThumbnailsWrapper.appendChild(videoThumbnail);
-    		recordedVideosText.style.display = 'block';
+            const videoThumbnailsWrapper = document.querySelector('.video-thumbnails-wrapper');
+            videoThumbnailsWrapper.appendChild(videoThumbnail);
+            recordedVideosText.style.display = 'block';
         }
 
-        function removeVideoFromStorage(videoURL) {
-            const savedVideos = JSON.parse(localStorage.getItem('sigmaScreenRecordings')) || [];
-            const updatedVideos = savedVideos.filter(videoData => videoData.videoURL !== videoURL);
-            localStorage.setItem('sigmaScreenRecordings', JSON.stringify(updatedVideos));
-            if (updatedVideos.length === 0) {
-                recordedVideosText.style.display = 'none';
-            }
+        function deleteVideoFromDB(videoURL) {
+            const transaction = db.transaction(['videos'], 'readwrite');
+            const objectStore = transaction.objectStore('videos');
+            const index = objectStore.index('date');
+            const request = index.getAll();
+
+            request.onsuccess = function(event) {
+                const videos = event.target.result;
+                const videoToDelete = videos.find(video => video.videoURL === videoURL);
+                if (videoToDelete) {
+                    objectStore.delete(videoToDelete.id);
+                }
+            };
         }
 
         popupCloseButton.addEventListener('click', () => {
@@ -406,6 +444,8 @@
             popupVideo.src = '';
             popupCloseButton.style.display = 'none';
         });
+
+        window.addEventListener('load', openDB);
     </script>
 </body>
 </html>
